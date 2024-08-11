@@ -3,6 +3,7 @@ import pandas as pd
 import preprocessor
 import helper
 import plotly.express as px
+import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.figure_factory as ff
@@ -172,10 +173,23 @@ if user_menu == 'Athlete-wise Analysis':
     x3 = athlete_df[athlete_df['Medal'] == 'Silver']['Age'].dropna()
     x4 = athlete_df[athlete_df['Medal'] == 'Bronze']['Age'].dropna()
 
-    fig = ff.create_distplot([x1, x2, x3, x4],
-                             ['Overall Age', 'Gold Medalist', 'Silver Medalist', 'Bronze Medalist'],
-                             show_hist=False, show_rug=False)
-    fig.update_layout(autosize=False, width=1000, height=600)
+    data = [x1, x2, x3, x4]
+    labels = ['Overall Age', 'Gold Medalist', 'Silver Medalist', 'Bronze Medalist']
+
+# Create a histogram
+    fig = go.Figure()
+    for ages, label in zip(data, labels):
+        fig.add_trace(go.Histogram(x=ages, name=label, opacity=0.75))
+
+# Update layout
+    fig.update_layout(
+        barmode='overlay',
+        title='Age Distribution of Medalists',
+        xaxis_title='Age',
+        yaxis_title='Count'
+)
+
+# Show figure
     st.plotly_chart(fig)
 
     famous_sports = [
@@ -201,12 +215,14 @@ if user_menu == 'Athlete-wise Analysis':
 
     fig = ff.create_distplot(x, name, show_hist=False, show_rug=False)
     fig.update_layout(autosize=False, width=1000, height=600)
+    st.title("Distribution of Age wrt Sports(Gold Medalist)")
     st.plotly_chart(fig)
 
     sport_list = df['Sport'].unique().tolist()
     sport_list.sort()
     sport_list.insert(0, 'Overall')
 
+    st.title('Height Vs Weight')
     selected_sport = st.selectbox('Select a Sport', sport_list)
     temp_df = helper.weight_v_heigth(df, selected_sport)
     fig, ax = plt.subplots()
