@@ -213,11 +213,32 @@ if user_menu == 'Athlete-wise Analysis':
             x.append(ages)
             name.append(sport)
 
-    fig = ff.create_distplot(x, name, show_hist=False, show_rug=False)
-    fig.update_layout(autosize=False, width=1000, height=600)
-    st.title("Distribution of Age wrt Sports(Gold Medalist)")
-    st.plotly_chart(fig)
+    traces = []
+    for i, data in enumerate(x):
+        trace = go.Histogram(
+            x=data,
+            name=name[i],
+            histnorm='probability',
+            opacity=0.7
+        )
+        traces.append(trace)
 
+    # Create the layout for the plot
+    layout = go.Layout(
+        autosize=False,
+        width=1000,
+        height=600,
+        title="Distribution of Age wrt Sports (Gold Medalist)",
+        xaxis_title="Age",
+        yaxis_title="Probability",
+        barmode='overlay'  # Overlay the histograms
+    )
+
+    # Combine the traces and layout into a figure
+    fig = go.Figure(data=traces, layout=layout)
+
+    # Display the plot in Streamlit
+    st.plotly_chart(fig)
     sport_list = df['Sport'].unique().tolist()
     sport_list.sort()
     sport_list.insert(0, 'Overall')
